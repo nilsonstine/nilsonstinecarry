@@ -10,32 +10,31 @@ window.addEventListener("load", function () {
   audio.loop = true;
 });
 
-window.addEventListener("load", playsong());
+//window.addEventListener("load", playsong());
 
-function playsong() {
-  master = document.getElementById("master");
+function InitializeStuff(callback) {
+  document.getElementById("initializebutton").innerHTML =
+    '<i class="fa fa-circle-o-notch fa-spin"></i>Intializing!';
+  var script = document.createElement("script");
+  script.type = "text/javascript";
 
-  master.oninput = function (event) {
-    document.getElementById("output").innerHTML =
-      "<b>Volume is at:</b> " + master.value + "%";
-    var elements = document.querySelectorAll("audio, video");
-    elements = document;
+  if (script.readyState) {
+    //IE
+    script.onreadystatechange = function () {
+      if (script.readyState == "loaded" || script.readyState == "complete") {
+        script.onreadystatechange = null;
+        callback();
+      }
+    };
+  } else {
+    //Others
+    script.onload = function () {
+      callback();
+    };
+  }
 
-    if (startsound) {
-      audio.play();
-    }
-    audio.volume = master.value / 100;
-    startsound = false;
-    console.log(master.value);
-    document.addEventListener("mouseup", detectmouseup);
-  };
-}
-
-function detectmouseup() {
-  audio.pause();
-  startsound = true;
-  document.removeEventListener("mouseup", detectmouseup);
-  console.log("stopped");
+  script.src = "https://tonejs.github.io/build/Tone.js";
+  document.getElementsByTagName("head")[0].appendChild(script);
 }
 
 var currentsoundcode;
@@ -81,20 +80,54 @@ document.getElementById("waitingforsound").style.display = "none";
 // NOT NEEDED JUST HERE FOR LESS CONFUSION CUM CUM CUM document.getElementById("waitingfortap").style.display = "none";
 document.getElementById("toofast").style.display = "none";
 document.getElementById("result").style.display = "none";
+document.getElementById("startbutton").style.display = "none";
+document.getElementById("sliderdiv").style.display = "none";
 
 //Instruction removal
-document.getElementById("startbutton").onclick = function () {
-  document.getElementById("reactionlearn").style.display = "none";
-  document.getElementById("startbutton").disabled = "true";
-  playsound();
-};
+var synth;
+var now;
 
-var waitforsoundtoplay;
-//Creation of synth instance
-const synth = new Tone.Synth().toDestination();
-const now = Tone.now();
+//Volume bar stuff
+var initialsetupfortonetest = true;
+function initializedassets() {
+  console.log("initialized setup23412");
+  synth = new Tone.Synth().toDestination();
+  now = Tone.now();
+  initialsetupfortonetest = false;
+  document.getElementById("initializebutton").style.display = "none";
+  document.getElementById("startbutton").style.display = "block";
+  document.getElementById("sliderdiv").style.display = "block";
+  playsong();
+}
+
+//document.getElementById("master").addEventListener("mousedown", playsong);
+function playsong() {
+  console.log("playing sound");
+  master = document.getElementById("master");
+  document.getElementById("volumevalueoutput").innerHTML =
+    "<b>Volume is at:</b> " + master.value + "DB";
+  //master.removeEventListener("mousedown", playsong);
+
+  master.oninput = function (event) {
+    synth.volume.value = master.value;
+    console.log(master.value);
+    document.getElementById("volumevalueoutput").innerHTML =
+      "<b>Volume is at:</b> " + master.value + "DB";
+  };
+  master.onmousedown = function () {
+    synth.triggerAttack("C4", now);
+  };
+  master.onmouseup = function () {
+    synth.triggerRelease(now);
+    console.log("stopped");
+  };
+}
+
+//actual test
 
 function playsound() {
+  document.getElementById("reactionlearn").style.display = "none";
+  synth.volume.value = 20;
   synth.triggerRelease(now);
   clickedearly = false;
   document.getElementById("toofast").style.display = "none";
@@ -119,6 +152,7 @@ function playsoundelement() {
   document.removeEventListener("mousedown", toofast);
   currentsoundcode = arrayofsounds[0];
   arrayofsounds.shift();
+  synth.volume.value = master.value;
   synth.triggerAttack(currentsoundcode, now);
   createdTime = Date.now();
   document.addEventListener("mousedown", whenclick);
