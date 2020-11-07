@@ -1,7 +1,6 @@
 console.log("js linked correctly");
 //mobile detection
 
-
 var redReactionTimes = new Array();
 var yellowReactionTimes = new Array();
 var blueReactionTimes = new Array();
@@ -28,30 +27,28 @@ if (
   window.alert("To participate in this study you will need to use a computer");
   window.location.href = "https://www.youtube.com/watch?v=6r5eGfbbLgk";/*/
   device = "phone";
+} else {
+  device = "computer";
 }
-else{
-  device= "computer";
+
+const myUrl = new URL(window.location.href);
+name = myUrl.searchParams.get("name");
+age = myUrl.searchParams.get("age");
+gender = myUrl.searchParams.get("gender");
+if (
+  nameinput === null ||
+  ageinput === null ||
+  genderinput === null ||
+  nameinput === "" ||
+  ageinput === "" ||
+  genderinput === ""
+) {
+  window.alert("Please go through the main url");
+  window.location.href = "index.html";
 }
 
-var str = window.location.href;
-name = str.substring(str.lastIndexOf("?name=") + 6, str.lastIndexOf("?age="));
-age = str.substring(str.lastIndexOf("?age=") + 5, str.lastIndexOf("?gender="));
-gender = str.substring(str.lastIndexOf("?gender=") + 8, str.lastIndexOf("?"));
-str = "";
-
-/*/
-ONLY FOR REFERENCE SLUTA SPHAGETTI KODA
-var redReaction = "ee4117";
-var yellowReaction = "fcf60a";
-var blueReaction = "0267ad";
-var orangeReaction = "e17000";
-var pinkReaction = "ff69b4";
-
-var hz262Reaction = "Middle C, C4";
-var hz1047Reaction = "C6";
-var hz4186Reaction = "Highest C, C8";
-/*/
-
+let userdata = getuserdatafromurl();
+const [name, age, gender] = getuserdatafromurl();
 //Creates array of colors(lite sphagetti är ok ibland)
 var ColorCodes =
   "#ee4117-#fcf60a-#0267ad-#e17000-#ff69b4-#ee4117-#fcf60a-#0267ad-#e17000-#ff69b4-#ee4117-#fcf60a-#0267ad-#e17000-#ff69b4-#ee4117-#fcf60a-#0267ad-#e17000-#ff69b4-#ee4117-#fcf60a-#0267ad-#e17000-#ff69b4";
@@ -220,16 +217,7 @@ function saveToSheetsandGoToSound() {
   )
     .then((r) => r.json())
     .then((data) => {
-      //window.alert("data sent to google sheets, pls write some more code now");
-      window.location.href =
-        "reactionSound.html?name=" +
-        name +
-        "?age=" +
-        age +
-        "?gender=" +
-        gender +
-        "?";
-
+      window.location.href = "/reactionColor.html?" + myUrl.searchParams;
       console.log(data);
     })
     .catch((error) => {

@@ -32,7 +32,12 @@
           with your left-mouse button immediately. Give it a try:<br />
         </p>
 
-        <button class="btn btn-primary" id="startbutton" type="button" onclick='playsound()'>
+        <button
+          class="btn btn-primary"
+          id="startbutton"
+          type="button"
+          onclick="playsound()"
+        >
           Start
         </button>
         <button
@@ -46,13 +51,14 @@
         <div class="container" id="sliderdiv">
           <input
             type="range"
-            min="-10"
+            min="-20"
             max="10"
             value="0"
             step="0.001"
             list="tickmarks"
             id="master"
-            onclick="playsong()"
+            onclick="adjustvolume()"
+            style="width: 100%"
           />
           <datalist id="tickmarks">
             <option>-8</option>
