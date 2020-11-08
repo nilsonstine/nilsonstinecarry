@@ -14,10 +14,8 @@ var clickedTime;
 var createdTime;
 var reactionTime;
 var clickedearly;
-var name;
-var age;
-var gender;
 var device;
+var highscore=null;
 if (
   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
     navigator.userAgent
@@ -32,23 +30,23 @@ if (
 }
 
 const myUrl = new URL(window.location.href);
-name = myUrl.searchParams.get("name");
-age = myUrl.searchParams.get("age");
-gender = myUrl.searchParams.get("gender");
+var name = myUrl.searchParams.get("name");
+var age = myUrl.searchParams.get("age");
+var gender = myUrl.searchParams.get("gender");
 if (
-  nameinput === null ||
-  ageinput === null ||
-  genderinput === null ||
-  nameinput === "" ||
-  ageinput === "" ||
-  genderinput === ""
+  name === null ||
+  age === null ||
+  gender === null ||
+  name === "" ||
+  age === "" ||
+  gender === ""
 ) {
   window.alert("Please go through the main url");
   window.location.href = "index.html";
 }
 
-let userdata = getuserdatafromurl();
-const [name, age, gender] = getuserdatafromurl();
+//let userdata = getuserdatafromurl();
+//const [name, age, gender] = getuserdatafromurl();
 //Creates array of colors(lite sphagetti är ok ibland)
 var ColorCodes =
   "#ee4117-#fcf60a-#0267ad-#e17000-#ff69b4-#ee4117-#fcf60a-#0267ad-#e17000-#ff69b4-#ee4117-#fcf60a-#0267ad-#e17000-#ff69b4-#ee4117-#fcf60a-#0267ad-#e17000-#ff69b4-#ee4117-#fcf60a-#0267ad-#e17000-#ff69b4";
@@ -67,6 +65,9 @@ document.getElementById("startbutton").onclick = function () {
   showcolor();
 };
 var waitforcolortoshow;
+document.getElementById("pressedtooearly").onclick = function () {
+  showcolor();
+};
 function showcolor() {
   clickedearly = false;
   document.getElementById("toofast").style.display = "none";
@@ -101,7 +102,7 @@ function toofast() {
   document.getElementById("toofast").style.display = "block";
   clickedearly = true;
   document.removeEventListener("mousedown", toofast);
-  document.addEventListener("mousedown", showcolor);
+  document.removeEventListener("mousedown", showcolor);
   clearTimeout(waitforcolortoshow);
 }
 var btn;
@@ -137,6 +138,11 @@ function whenclick() {
   } else {
     document.getElementById("resulttxt").innerHTML =
       "It took you " + reactionTime + "ms to tap! press anywhere to continue";
+  }
+  if (reactionTime < highscore) {
+    document.getElementById("highscore").innerHTML =
+      "You set a new highscore! Previous was " + highscore;
+    highscore = reactionTime;
   }
 }
 
@@ -217,7 +223,7 @@ function saveToSheetsandGoToSound() {
   )
     .then((r) => r.json())
     .then((data) => {
-      window.location.href = "/reactionColor.html?" + myUrl.searchParams;
+      window.location.href = "/reactionSound.html?" + myUrl.searchParams;
       console.log(data);
     })
     .catch((error) => {

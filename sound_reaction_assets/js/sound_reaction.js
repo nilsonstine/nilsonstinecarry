@@ -16,10 +16,7 @@ var clickedTime;
 var createdTime;
 var reactionTime;
 var clickedearly;
-var name;
-var age;
-var gender;
-
+var highscore = null;
 var SoundCodes = "C4-C6-C8-C4-C6-C8-C4-C6-C8-C4-C6-C8-C4-C6-C8";
 arrayofsounds = SoundCodes.split("-");
 arrayofsounds = shuffle(arrayofsounds);
@@ -39,17 +36,16 @@ if (
 }
 
 const myUrl = new URL(window.location.href);
-name = myUrl.searchParams.get("name");
-age = myUrl.searchParams.get("age");
-gender = myUrl.searchParams.get("gender");
-
+var name = myUrl.searchParams.get("name");
+var age = myUrl.searchParams.get("age");
+var gender = myUrl.searchParams.get("gender");
 if (
-  nameinput === null ||
-  ageinput === null ||
-  genderinput === null ||
-  nameinput === "" ||
-  ageinput === "" ||
-  genderinput === ""
+  name === null ||
+  age === null ||
+  gender === null ||
+  name === "" ||
+  age === "" ||
+  gender === ""
 ) {
   window.alert("Please go through the main url");
   window.location.href = "index.html";
@@ -123,7 +119,9 @@ function adjustvolume() {
 }
 
 //actual test
-
+document.getElementById("pressedtooearly").onclick = function () {
+  playsound();
+};
 function playsound() {
   document.getElementById("reactionlearn").style.display = "none";
   synth.volume.value = master.value;
@@ -137,7 +135,7 @@ function playsound() {
 
   var time = getRandomNumber(2000, 5000);
   //Uncomment for quick debugging
-  //time = 10;
+  time = 10;
 
   document.getElementById("waitingforsound").style.display = "block";
   document.addEventListener("mousedown", toofast);
@@ -161,7 +159,8 @@ function toofast() {
   document.getElementById("waitingforsound").style.display = "none";
   document.getElementById("toofast").style.display = "block";
   document.removeEventListener("mousedown", toofast);
-  document.addEventListener("mousedown", playsound);
+  document.removeEventListener("mousedown", playsound);
+
   //Cancels the timeout so it dont spam
   clearTimeout(waitforsoundtoplay);
 }
@@ -176,9 +175,34 @@ function whenclick() {
   reactionTime = clickedTime - createdTime;
   console.log(currentsoundcode);
   log();
+
   document.getElementById("result").style.display = "block";
-  document.getElementById("resulttxt").innerHTML =
-    "It took you " + reactionTime + "ms to tap! press anywhere to continue";
+  if (arrayofsounds.length < 1) {
+    console.log("cumcumcum");
+    document.removeEventListener("mousedown", toofast);
+    document.removeEventListener("mousedown", playsound);
+    document.removeEventListener("mousedown", whenclick);
+    document.getElementById("resulttxt").innerHTML =
+      "It took you " +
+      reactionTime +
+      "ms to tap! press anywhere to continue to the next test!";
+    btn = document.createElement("BUTTON");
+    btn.innerHTML = "Continue to sound test!";
+    btn.onclick = function () {
+      saveToSheetsandGoToSound();
+    };
+    btn.className = "btn btn-primary";
+    document.getElementById("result").appendChild(btn);
+    //document.getElementById("result")[0].appendChild(btn);
+  } else {
+    document.getElementById("resulttxt").innerHTML =
+      "It took you " + reactionTime + "ms to tap! press anywhere to continue";
+  }
+  if (reactionTime < highscore) {
+    document.getElementById("highscore").innerHTML =
+      "You set a new highscore! Previous was " + highscore;
+    highscore = reactionTime;
+  }
 }
 
 //document.addEventListener("mousedown", mousePressed);
